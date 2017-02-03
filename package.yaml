@@ -1,0 +1,34 @@
+name:                b
+version:             1.0.0
+license:             BSD3
+
+dependencies:
+  - aeson
+  - base >= 4.7 && < 5
+  - base-prelude
+  - bytestring
+  - directory
+  - http-types
+  - lens
+  - lucid
+  - postgresql-simple
+  - text
+  - time
+  - unix
+  - wai
+  - wai-middleware-static
+  - warp
+
+default-extensions:
+  - NoImplicitPrelude
+  - ScopedTypeVariables
+  - StrictData
+
+library:
+  source-dirs: b/lib/
+
+executables:
+  b:
+    dependencies: b
+    source-dirs:      b/
+    main:             Main.hs

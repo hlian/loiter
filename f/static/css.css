@@ -1,0 +1,14 @@
+@import "normalize.css";
+
+html {
+  padding: 10px;
+}
+
+body, input, textarea {
+  font-family: -webkit-system-font;
+}
+
+aside ul {
+  list-style-type: none;
+  padding: 0;
+}
