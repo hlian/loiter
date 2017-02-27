@@ -3,6 +3,7 @@
 -- the b stands for "backend"
 module B where
 
+import qualified Data.Text as Text
 import qualified Lucid
 import qualified Network.HTTP.Types as HTTP
 import qualified Network.Wai as Wai
@@ -22,12 +23,12 @@ port :: Int
 port = read . unsafePerformIO $ getEnv "port"
 
 {-# NOINLINE dir #-}
-dir :: String
-dir = unsafePerformIO $ getEnv "dir"
+dir :: Text
+dir = view packed . unsafePerformIO $ getEnv "dir"
 
 homePage :: Wai.Application
 homePage req respond = do
-  everything <- Directory.listDirectory dir
+  everything <- Directory.listDirectory (view unpacked dir)
   channels <-
     filterM
       (\entry -> Directory.doesDirectoryExist (printf "%s/%s" dir entry))
@@ -37,12 +38,10 @@ homePage req respond = do
 
 channelPage :: Text -> Wai.Application
 channelPage channel req respond = do
-  everything <- Directory.listDirectory dir
-  channels <-
-    filterM
-      (\entry -> Directory.doesDirectoryExist (printf "%s/%s" dir entry))
-      everything
-  let bytes = Lucid.renderBS (home channels)
+  let subdir = printf "%s/%s" dir channel
+  everything <- Directory.listDirectory (view unpacked dir)
+  when (Text.isInfixOf "." channel) $ do error "no"
+  let bytes = Lucid.renderBS (channelView subdir)
   respond $ Wai.responseLBS HTTP.status200 [] bytes
 
 serve :: Wai.Application

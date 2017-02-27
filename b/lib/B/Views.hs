@@ -14,8 +14,11 @@ layout inner = do
       meta_ [charset_ "utf-8"]
     body_ inner
 
+channelView :: String -> Html ()
+channelView channel = layout (p_ [] (fromString channel))
+
 home :: [String] -> Html ()
-home dirs = do
+home dirs =
   layout . aside_ $ do
     h2_ "channels"
     ul_ [] (mapM_ leaf dirs)
