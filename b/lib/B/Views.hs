@@ -2,6 +2,8 @@
 
 module B.Views where
 
+import qualified B.DB as DB
+
 import B.Prelude
 import Lucid
 
@@ -14,8 +16,8 @@ layout inner = do
       meta_ [charset_ "utf-8"]
     body_ inner
 
-channelView :: String -> Html ()
-channelView channel = layout (p_ [] (fromString channel))
+channelView :: Text -> DB.Job -> Html ()
+channelView channel job = layout (p_ [] (toHtml channel <> toHtml (show job)))
 
 home :: [String] -> Html ()
 home dirs =

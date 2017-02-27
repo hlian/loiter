@@ -40,7 +40,7 @@ SET default_with_oids = false;
 
 CREATE TABLE jobs (
     id integer NOT NULL,
-    name text NOT NULL,
+    name jsonb NOT NULL,
     status integer NOT NULL,
     dt timestamp with time zone NOT NULL
 );
@@ -132,6 +132,13 @@ ALTER TABLE ONLY jobs
 
 ALTER TABLE ONLY truth
     ADD CONSTRAINT truth_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: jobs_name_unique; Type: INDEX; Schema: public; Owner: loiter
+--
+
+CREATE UNIQUE INDEX jobs_name_unique ON jobs USING btree (name);
 
 
 --

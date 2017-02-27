@@ -12,6 +12,7 @@ dependencies:
   - lens
   - lucid
   - postgresql-simple
+  - resource-pool
   - text
   - time
   - unix
