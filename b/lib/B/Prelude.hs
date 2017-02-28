@@ -5,6 +5,7 @@ module B.Prelude
   , log
   ) where
 
+import B.Prelude.Globals as X
 import BasePrelude as X hiding (lazy, (&), uncons, index, log)
 import Control.Lens as X
 import Data.Text.Lens as X

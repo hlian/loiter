@@ -18,18 +18,6 @@ import qualified B.DB as DB
 import B.Prelude
 import B.Views
 
-{-# NOINLINE mode #-}
-mode :: String
-mode = unsafePerformIO (getEnv "mode")
-
-{-# NOINLINE port #-}
-port :: Int
-port = read . unsafePerformIO $ getEnv "port"
-
-{-# NOINLINE dir #-}
-dir :: Text
-dir = view packed . unsafePerformIO $ getEnv "dir"
-
 homePage :: Wai.Application
 homePage req respond = do
   everything <- Directory.listDirectory (view unpacked dir)
@@ -87,4 +75,6 @@ mainWithMode hmm = do
   log (printf "mainWithMode: unrecognized mode %s" hmm)
   exitWith (ExitFailure 1)
 
-main = mainWithMode mode
+main = do
+  log (printf "main: globals: dir=\"%s\" mode=\"%s\"" dir mode)
+  mainWithMode mode
