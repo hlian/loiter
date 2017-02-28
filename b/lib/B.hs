@@ -4,6 +4,7 @@
 module B where
 
 import qualified Data.Aeson as Aeson
+import qualified Data.Aeson.Types as Aeson
 import qualified Data.Text as Text
 import qualified Database.PostgreSQL.Simple as Postgres
 import qualified Lucid
@@ -72,6 +73,16 @@ mainWithMode "serve" = do
   where
     policy =
       Static.isNotAbsolute <> Static.noDots <> Static.hasPrefix "f/static"
+mainWithMode "job" = do
+  pool <- DB.connect
+  jobMaybe <- DB.gimmeAJob pool
+  case jobMaybe of
+    Nothing -> error "no more work"
+    Just (DB.Job _ value status time) ->
+      case Aeson.parseEither Aeson.parseJSON value of
+        Left e -> error e
+        Right (DB.AbsorbChannel (DB.Book book) (DB.Channel chan)) ->
+          print (book, chan)
 mainWithMode hmm = do
   log (printf "mainWithMode: unrecognized mode %s" hmm)
   exitWith (ExitFailure 1)

@@ -3,7 +3,7 @@
 module B.DB where
 
 import B.Prelude hiding ((.=))
-import Data.Aeson (Value, ToJSON(..), (.=))
+import Data.Aeson (Value, ToJSON(..), (.=), (.:))
 import qualified Data.Aeson as Aeson
 import Data.Pool (Pool)
 import qualified Data.Pool as Pool
@@ -34,8 +34,14 @@ data AbsorbChannel =
 
 instance Aeson.ToJSON AbsorbChannel where
   toJSON (AbsorbChannel (Book book) (Channel channel)) =
-    Aeson.object
-      ["book" .= book, "channel" .= channel, "tag" .= ("ChannelName" :: String)]
+    Aeson.object ["b" .= book, "c" .= channel, "t" .= ("ChannelName" :: String)]
+
+instance Aeson.FromJSON AbsorbChannel where
+  parseJSON =
+    Aeson.withObject "AbsorbChannel" $ \o -> do
+      b <- o .: "b"
+      c <- o .: "c"
+      pure (AbsorbChannel (Book b) (Channel c))
 
 type Cn = Pool SQL.Connection
 
@@ -73,3 +79,13 @@ insertJob pool name = do
     return (Job key name status dt)
   where
     status = Alive
+
+gimmeAJob :: Cn -> IO (Maybe Job)
+gimmeAJob pool = do
+  Pool.withResource pool $ \conn -> do
+    rows <-
+      SQL.query_
+        conn
+        "SELECT id, name, status, dt FROM jobs ORDER BY dt LIMIT 1"
+    return . listToMaybe $
+      [Job key name (toEnum status) dt | (key, name, status, dt) <- rows]
